@@ -1,0 +1,111 @@
+.gray-text{
+    color :#747474;
+}
+.text-uppercase{
+    text-transform: uppercase;
+}
+.sideBar{
+    height: 100vh;
+    min-width: 25%;
+    border: 1px #B1B1B1 solid;
+    display: flex;
+    color :#747474;
+    flex-direction: column;
+    align-items: center;
+    .title{
+        margin-top:10px;
+    }
+    .products-box{
+        background-color: #F9F9F9;
+        border: 1px #B1B1B1 solid;
+        overflow-y: auto;
+        width: 100%;
+        height: 50%;
+        .menu{
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .menu-item-title{
+                margin :auto;
+            }
+        }
+        .products-items{
+            margin-top: 20px;
+            display: flex;
+            flex-direction:column;
+            align-items: center;
+            .product-item{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 95%;
+                margin: 7px;
+                background-color: white;
+                border: 1px #B1B1B1 solid; 
+                h4{
+                    margin: auto;
+                }
+            }
+        }
+    }
+    .total{
+       border: 1px #B1B1B1 solid;
+       border-radius: .5rem;
+       width:95%;
+       margin: 7px;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       .total-item{
+           margin : 10px;
+       }
+    }
+    .actions{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 90%;
+        margin-top: 30px;
+        .btn-cancel{
+            display: block;
+            background-color: #FF5757;
+            padding: 7px 30px;
+            align-content: center;
+            color :white;
+            border: .5px #6A8977 solid;
+            border-radius: .5rem;
+            margin: auto;
+        }
+        .btn-pay{
+            display: block;
+            width: 50%;
+            background-color: #50EB93;
+            padding: 7px 30px;
+            color :white;
+            border: .5px #6A8977 solid;
+            border-radius: .5rem;
+            margin: auto;
+        }
+    }
+}
+
+#style-2::-webkit-scrollbar-track
+{
+	box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+#style-2::-webkit-scrollbar
+{
+	width: 12px;
+	background-color: #F5F5F5;
+}
+
+#style-2::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #868686;
+}
