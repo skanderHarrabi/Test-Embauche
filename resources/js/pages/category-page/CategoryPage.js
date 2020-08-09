@@ -1,52 +1,72 @@
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import axiosInstance from "../../config/axios-instance";
+import { Form, Input, Alert } from 'antd';
 
 import './CategoryPage.scss';
 
-const CategoryPage = props => {
-    const { handleSubmit, register, errors } = useForm();
-    const [name, setName] = useState('');
+const categoryForm = props => {
+    const [alert, setAlert] = useState(false);
+    const { getFieldDecorator } = props.form;
 
-    const handleSubmitForm = event => {
+    const handleSubmitForm = (event, value) => {
         event.preventDefault();
-        const data = {
-            name
-        }
-        const url = "category";
-        axiosInstance({
-            method: "post",
-            url: url,
-            data: data
-        }).then(res => {
-            console.log(res.data);
-            console.log("done");
-            props.history.push('/');
-        })
+        props.form.validateFields((err, data) => {
+            if (!err) {
+                const url = "category";
+                axiosInstance({
+                    method: "post",
+                    url: url,
+                    data: data
+                }).then(res => {
+                    console.log(res.data);
+                    console.log("done");
+                    setAlert(true);
+                    setTimeout(() => {
+                        setAlert(false);
+                        props.history.push('/');
+                    }, 1000);
+                })
+            } else {
+                console.log(err);
+            }
+        });
     }
-
-    const handleInputChange = event => {
-        setName(event.target.value);
-    }
-
+    const handlClose = () => {
+        setAlert(false);
+    };
     return (
         <div className="page-wrapper bg-red p-t-180 p-b-100 font-robo">
             <div className="wrapper  wrapper--w680">
                 <div className="card card-2">
                     <div className="card-body">
+                        {alert === true ? <Alert
+                            message="success"
+                            description="you add category succefully"
+                            closable
+                            style={{ marginTop: '20px', marginBottom: '20px' }}
+                            type="success"
+                            onClose={handlClose}
+                            showIcon
+                        /> : ''
+                        }
                         <h2 className="title">Add Category</h2>
-                        <form onSubmit={handleSubmit(handleSubmitForm)}>
+                        <Form onSubmit={handleSubmitForm}>
                             <div className="input-group">
-                                <input className="input--style-2" type="text" value={name} onChange={handleInputChange} placeholder="Name" name="name" ref={register({
-                                    required: "Name is Required"
-                                })} />
-
+                                <Form.Item>
+                                    {getFieldDecorator('name', {
+                                        rules: [{ required: true, message: 'Name of category is required!' }],
+                                    })(
+                                        <Input className="input--style-2" type="text" placeholder="Name" />,
+                                    )}
+                                </Form.Item>
                             </div>
-                            <div className="error">{errors.name && errors.name.message}</div>
                             <div className="p-t-30">
-                                <button className="btn btn--radius btn--green" type="submit">Add</button>
+                                <Form.Item>
+                                    <button className="btn btn--radius btn--green" type="submit">Add</button>
+                                </Form.Item>
                             </div>
-                        </form>
+                        </Form>
                     </div>
                 </div>
             </div>
@@ -54,5 +74,5 @@ const CategoryPage = props => {
     );
 };
 
-
+const CategoryPage = Form.create({ name: 'category_form' })(categoryForm);
 export default CategoryPage;

@@ -4,12 +4,15 @@ import SideBar from "../../components/side-bar/SideBar";
 import VerticalScroll from "../../components/vertical-scroll/VerticalScroll";
 import ProductsTable from "../../components/products-table/productsTable";
 import axiosInstance from "../../config/axios-instance";
+import { Alert } from 'antd';
+
 
 
 const HomePage = () => {
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]);
   const [prodstobuy, setProdstobuy] = useState([]);
+  const [alert, setAlert] = useState(false);
   const [total, setTotal] = useState(0);
   useEffect(() => {
     let url = "products/";
@@ -50,29 +53,36 @@ const HomePage = () => {
   }
 
   const handlePay = () => {
-    let totaleqte = 0;
-    let prods = [];
-    prodstobuy.map(p => {
-      totaleqte += p.qte;
-      prods.push({ prodId: p.id, qte: p.qte });
-    });
-    console.log(totaleqte);
-    const data = {
-      totalPrice: total,
-      qte: totaleqte,
-      prods: prods
+    if (prodstobuy.length > 0) {
+      let totaleqte = 0;
+      let prods = [];
+      prodstobuy.map(p => {
+        totaleqte += p.qte;
+        prods.push({ prodId: p.id, qte: p.qte });
+      });
+      console.log(totaleqte);
+      const data = {
+        totalPrice: total,
+        qte: totaleqte,
+        prods: prods
+      }
+      const url = 'order'
+      axiosInstance({
+        method: "post",
+        url: url,
+        data: data
+      }).then(res => {
+        console.log(res.data);
+        console.log("done");
+        setProdstobuy([]);
+        setTotal(0);
+      })
+    } else {
+      setAlert(true);
+      setTimeout(() => {
+        setAlert(false);
+      }, 1000);
     }
-    const url = 'order'
-    axiosInstance({
-      method: "post",
-      url: url,
-      data: data
-    }).then(res => {
-      console.log(res.data);
-      console.log("done");
-      setProdstobuy([]);
-      setTotal(0);
-    })
   }
 
   const selectedCategories = id => {
@@ -95,10 +105,12 @@ const HomePage = () => {
       setData(res.data);
     });
   }
-
+  const handlClose = () => {
+    setAlert(false);
+  };
   return (
     <div className="home-page">
-      <SideBar prods={prodstobuy} setProds={setProdstobuy} total={total} setTotal={setTotal} handleCancel={handleCancel} handlePay={handlePay} />
+      <SideBar prods={prodstobuy} handlClose={handlClose} alert={alert} setProds={setProdstobuy} total={total} setTotal={setTotal} handleCancel={handleCancel} handlePay={handlePay} />
       <div className="main">
         <VerticalScroll categories={categories} allProducts={allProducts} selectedCategories={selectedCategories} />
         <ProductsTable data={data} setData={setData} handelClick={handelClick} total={total} setTotal={setTotal} />

@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import './ProductsPage.scss';
 import { Select } from 'antd';
 import axiosInstance from "../../config/axios-instance";
+import { Form, Input, Alert } from 'antd';
 
 
-const ProductsPage = props => {
-    const { handleSubmit, register, errors } = useForm();
+const productForm = props => {
     const [selected, setSelected] = useState([]);
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
+    const [alert, setAlert] = useState(false);
+    const { getFieldDecorator } = props.form;
     const [categories, setCategories] = useState([]);
     const children = [];
 
@@ -29,51 +29,77 @@ const ProductsPage = props => {
     }
 
     const handleChange = (values) => {
-        console.log(values);
         setSelected(values);
     }
     const handleSubmitPost = event => {
+        console.log(event);
         event.preventDefault();
-        const data = {
-            name,
-            price,
-            selected
-        }
-        const url = "product";
-        axiosInstance({
-            method: "post",
-            url: url,
-            data: data
-        }).then(res => {
-            console.log(res.data);
-            console.log("done");
-            props.history.push('/');
-        })
+        props.form.validateFields((err, data) => {
+            if (!err) {
+                const product = {
+                    name: data.name,
+                    price: data.price,
+                    selected: selected
+                }
+                const url = "product";
+                axiosInstance({
+                    method: "post",
+                    url: url,
+                    data: product
+                }).then(res => {
+                    console.log(res.data);
+                    console.log("done");
+                    setAlert(true);
+                    setTimeout(() => {
+                        setAlert(false);
+                        props.history.push('/');
+                    }, 1000);
+
+                })
+            } else {
+                console.log(err);
+            }
+        });
     }
-    const handleInputChange = event => {
-        console.log(event.target.name);
-        event.target.name === 'price' ? setPrice(event.target.value) : setName(event.target.value);
-    }
+
+    const handlClose = () => {
+        setAlert(false);
+    };
     return (
         <div className="page-wrapper bg-red p-t-180 p-b-100 font-robo">
             <div className="wrapper  wrapper--w680">
                 <div className="card card-2">
                     <div className="card-body">
+                        {alert === true ? <Alert
+                            message="success"
+                            description="you add product succefully"
+                            closable
+                            style={{ marginTop: '20px', marginBottom: '20px' }}
+                            type="success"
+                            onClose={handlClose}
+                            showIcon
+                        /> : ''
+                        }
                         <h2 className="title">Add Product</h2>
-                        <form onSubmit={handleSubmit(handleSubmitPost)}>
+                        <Form onSubmit={handleSubmitPost}>
                             <div className="input-group">
-                                <input className="input--style-2" onChange={handleInputChange} value={name} type="text" placeholder="Name" name="name" ref={register({
-                                    required: "Name is Required"
-                                })} />
+                                <Form.Item>
+                                    {getFieldDecorator('name', {
+                                        rules: [{ required: true, message: 'Name of product is required!' }],
+                                    })(
+                                        <Input className="input--style-2" type="text" placeholder="Name" />,
+                                    )}
+                                </Form.Item>
                             </div>
-                            <div className="error">{errors.name && errors.name.message}</div>
                             <div className="input-group">
-                                <input className="input--style-2" onChange={handleInputChange} value={price} type="number" placeholder="Price" name="price" ref={register({
-                                    required: "Price is Required"
-                                })} />
-
+                                <Form.Item>
+                                    {getFieldDecorator('price', {
+                                        rules: [{ required: true, message: 'Price of product is required!' }],
+                                    })(
+                                        <Input className="input--style-2" type="number" placeholder="Name" />,
+                                    )}
+                                </Form.Item>
                             </div>
-                            <div className="error">{errors.price && errors.price.message}</div>
                             <Select
                                 className="input--style-2"
                                 mode="multiple"
@@ -86,16 +112,18 @@ const ProductsPage = props => {
                                 }
                             </Select>
                             <div className="p-t-30">
-                                <button className="btn btn--radius btn--green" type="submit">Add</button>
+                                <Form.Item>
+                                    <button className="btn btn--radius btn--green" type="submit">Add</button>
+                                </Form.Item>
                             </div>
 
-                        </form>
+                        </Form>
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 
-
+const ProductsPage = Form.create({ name: 'product_form' })(productForm);
 export default ProductsPage;

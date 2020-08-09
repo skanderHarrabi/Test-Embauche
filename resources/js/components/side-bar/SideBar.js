@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import icon from '../../icons/delete.png';
 import './SideBar.scss';
+import { Alert } from 'antd';
+
 
 const SideBar = props => {
     // const [test, setTest] = useState([{ name: 'aze', price: 77 }]);
@@ -60,7 +62,18 @@ const SideBar = props => {
             <div className="actions">
                 <button className="btn-cancel" onClick={props.handleCancel}><span className="strong">Cancel</span></button>
                 <button className="btn-pay" onClick={props.handlePay} ><span className="strong">Pay</span></button>
+
             </div>
+            {props.alert === true ? <Alert
+                message="error"
+                description="Nothing to buy"
+                closable
+                style={{ marginTop: '20px', marginBottom: '20px' }}
+                type="error"
+                onClose={props.handlClose}
+                showIcon
+            /> : ''
+            }
         </div>
     );
 };
